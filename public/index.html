@@ -7,16 +7,6 @@
 <body>
     <div>Hello</div>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-      const socket = io();
-
-      socket.on('connect', (socket) => {
-        console.log('Successfully connected to server');
-      });
-
-      socket.on('disconnect', (socket) => {
-        console.log('Disconnected from server');
-      });
-    </script>
+    <script src="/js/index.js"></script>
 </body>
 </html>
