@@ -12,6 +12,8 @@ const router = express.Router();
 const server = http.createServer(app);
 const io = socketIO(server);
 
+const { generateMessage } = require('./utils/message');
+
 const publicPath = path.join(__dirname, '../public');
 
 server.listen(port, () => {
@@ -25,26 +27,14 @@ app.use('/', router);
 io.on('connection', (socket) => {
   console.log('New user connected');
 
-  socket.emit('newMessage', {
-    from: 'Admin',
-    text: 'Welcome!',
-    createdAt: new Date().getTime()
-  });
+  socket.emit('newMessage', generateMessage('Admin', 'Welcome!'));
 
-  socket.broadcast.emit('newMessage', {
-    from: 'Admin',
-    text: 'New user joined!',
-    createdAt: new Date().getTime()
-  });
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined!'));
 
   socket.on('createMessage', (message) => {
     console.log('createMessage', message);
 
-    io.emit('newMessage', {
-      from     : message.from,
-      text     : message.text,
-      createdAt: new Date().getTime()
-    });
+    io.emit('newMessage', generateMessage(message.from, message.text));
   });
 
   socket.on('disconnect', () => {
@@ -52,4 +42,6 @@ io.on('connection', (socket) => {
   });
 });
 
-console.log(publicPath);
+module.exports = {
+  server
+};
