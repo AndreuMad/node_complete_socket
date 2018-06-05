@@ -12,7 +12,10 @@ const router = express.Router();
 const server = http.createServer(app);
 const io = socketIO(server);
 
-const { generateMessage } = require('./utils/message');
+const {
+  generateMessage,
+  generateLocationMessage
+} = require('./utils/message');
 
 const publicPath = path.join(__dirname, '../public');
 
@@ -31,10 +34,20 @@ io.on('connection', (socket) => {
 
   socket.broadcast.emit('newMessage', generateMessage('Admin', 'New user joined!'));
 
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
     console.log('createMessage', message);
 
     io.emit('newMessage', generateMessage(message.from, message.text));
+    callback();
+  });
+
+  socket.on('createLocationMessage', (data) => {
+    const {
+      latitude,
+      longitude
+    } = data;
+
+    io.emit('newLocationMessage', generateLocationMessage('Admin', latitude, longitude));
   });
 
   socket.on('disconnect', () => {
