@@ -13,22 +13,32 @@ socket.on('disconnect', () => {
 socket.on('newMessage', (message) => {
   const {
     from,
+    createdAt,
     text
   } = message;
-  const $message = jQuery('<li></li>');
+  const $template = jQuery('#message-template').html();
+  const $html = Mustache.render($template, {
+    from,
+    createdAt,
+    text
+  });
 
-  $message.text(`${from}: ${text}`);
-  $messageList.append($message);
+  $messageList.append($html);
 });
 
 socket.on('newLocationMessage', (message) => {
-  const $message = jQuery('<li></li>');
-  const $messageLink = jQuery('<a target="_blank">My current location</a>')
-
-  $message.text(`${message.from}: `);
-  $messageLink.attr('href', message.url);
-  $message.append($messageLink);
-  $messageList.append($message);
+  const {
+    from,
+    createdAt,
+    url
+  } = message;
+  const $template = jQuery('#location-message-template').html();
+  const $html = Mustache.render($template, {
+    from,
+    createdAt,
+    url
+  });
+  $messageList.append($html);
 });
 
 jQuery('#message-form')
