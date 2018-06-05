@@ -40,18 +40,24 @@ jQuery('#message-form')
       from: 'Jquery',
       text: $messageInput.val()
     }, () => {
-      $messageInput.val('')
+      $messageInput.val('');
     });
   });
 
 const $sendLocationButton = jQuery('#send-location');
 $sendLocationButton.on('click', () => {
+  $sendLocationButton
+    .attr('disabled', true)
+    .text('Sending location...');
   const position = navigator.geolocation.getCurrentPosition(
     (data) => {
       const {
         latitude,
         longitude
       } = data.coords;
+      $sendLocationButton
+        .attr('disabled', false)
+        .text('Send location');
 
       socket.emit('createLocationMessage', {
         latitude,
