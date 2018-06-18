@@ -17,7 +17,7 @@ describe('message', () => {
       from,
       text
     });
-    expect(result.createdAt).to.be.a('number');
+    expect(result.createdAt).to.be.a('string');
   });
 
   it('function generateLocationMessage generates proper message object', function it() {
@@ -30,6 +30,6 @@ describe('message', () => {
       from,
       url: `https://google.com/maps?q=${latitude},${longitude}`
     });
-    expect(result.createdAt).to.be.a('number');
+    expect(result.createdAt).to.be.a('string');
   })
 });

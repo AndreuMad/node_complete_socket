@@ -1,6 +1,7 @@
 const socket = io();
 
 const $messageList = jQuery('#message-list');
+const $usersList = jQuery('#users');
 
 const scrollToBottom = function() {
   const $newMessage = $messageList.children('li:last-child');
@@ -16,14 +17,29 @@ const scrollToBottom = function() {
 };
 
 socket.on('connect', () => {
-  console.log('Successfully connected to server');
+  const params = jQuery.deparam(window.location.search.replace('?', ''));
+  socket.emit('join', params, (error) => {
+    if (error) {
+      alert(error);
+      window.location = '/';
+    } else {
+      console.log('No error!');
+    }
+  });
+});
+
+socket.on('UPDATE_USERS_LIST', (users) => {
+  const $usersListInner = jQuery('<ol></ol>');
+
+  users.forEach(user => $usersListInner.append(jQuery('<li></li>').text(user)));
+  $usersList.html($usersListInner);
 });
 
 socket.on('disconnect', () => {
   console.log('Disconnected from server');
 });
 
-socket.on('newMessage', (message) => {
+socket.on('NEW_MESSAGE', (message) => {
   const {
     from,
     createdAt,
@@ -40,7 +56,7 @@ socket.on('newMessage', (message) => {
   scrollToBottom();
 });
 
-socket.on('newLocationMessage', (message) => {
+socket.on('NEW_LOCATION_MESSAGE', (message) => {
   const {
     from,
     createdAt,
@@ -61,7 +77,7 @@ jQuery('#message-form')
     event.preventDefault();
     const $messageInput = jQuery(event.currentTarget).find('[name=message]');
 
-    socket.emit('createMessage', {
+    socket.emit('CREATE_MESSAGE', {
       from: 'Jquery',
       text: $messageInput.val()
     }, () => {
@@ -84,7 +100,7 @@ $sendLocationButton.on('click', () => {
         .attr('disabled', false)
         .text('Send location');
 
-      socket.emit('createLocationMessage', {
+      socket.emit('CREATE_LOCATION_MESSAGE', {
         latitude,
         longitude
       });
